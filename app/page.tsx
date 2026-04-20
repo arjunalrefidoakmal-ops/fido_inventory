@@ -11,7 +11,9 @@ import {
   Search,
   Bell,
   ChevronDown,
-  Utensils
+  Utensils,
+  Menu,
+  X
 } from 'lucide-react';
 import { StoreProvider } from './store';
 import { DashboardView } from './DashboardView';
@@ -21,6 +23,7 @@ import { ReportsView } from './ReportsView';
 
 function DashboardApp() {
   const [activeTab, setActiveTab] = useState('Dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard },
@@ -32,18 +35,32 @@ function DashboardApp() {
 
   return (
     <StoreProvider>
-      <div className="min-h-screen bg-[#0e1117] text-slate-200 flex font-sans selection:bg-indigo-500/30">
-        <aside className="w-[280px] bg-[#161a25] border-r border-[#262A36] hidden lg:flex flex-col flex-shrink-0 relative overflow-y-auto">
+      <div className="min-h-screen bg-[#0e1117] text-slate-200 flex font-sans selection:bg-indigo-500/30 overflow-hidden relative">
+        {/* Mobile Sidebar Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" 
+            onClick={() => setIsMobileMenuOpen(false)} 
+          />
+        )}
+
+        <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-[#161a25] border-r border-[#262A36] flex flex-col flex-shrink-0 relative overflow-y-auto transition-transform duration-300 transform lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="p-6 flex items-center gap-3 relative z-10">
-            <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_-5px_rgba(99,102,241,0.6)]">
-              <Utensils className="w-5 h-5" />
+          <div className="p-6 flex items-center justify-between gap-3 relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_-5px_rgba(99,102,241,0.6)]">
+                <Utensils className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold tracking-tight text-white leading-none">DapurSync</h1>
+                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-1">Makan Bergizi Gratis</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">DapurSync</h1>
-              <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">Makan Bergizi Gratis Program</p>
-            </div>
+            
+            <button className="lg:hidden p-2 -mr-2 text-slate-400 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           <nav className="flex-1 px-4 py-4 space-y-1 relative z-10">
@@ -51,7 +68,10 @@ function DashboardApp() {
               <div key={item.name}>
                 <button
                   onClick={() => {
-                    if (!item.subItems) setActiveTab(item.name);
+                    if (!item.subItems) {
+                      setActiveTab(item.name);
+                      setIsMobileMenuOpen(false); // Close menu on mobile after selection
+                    }
                   }}
                   className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 group ${
                     activeTab === item.name && !item.subItems
@@ -73,7 +93,10 @@ function DashboardApp() {
                     {item.subItems.map((sub) => (
                       <button 
                         key={sub}
-                        onClick={() => setActiveTab(sub)}
+                        onClick={() => {
+                          setActiveTab(sub);
+                          setIsMobileMenuOpen(false); // Close menu on mobile after selection
+                        }}
                         className={`w-full text-left py-2 px-3 rounded-lg text-sm transition-colors ${
                           activeTab === sub 
                             ? 'text-indigo-400 font-medium' 
@@ -90,11 +113,11 @@ function DashboardApp() {
           </nav>
         </aside>
 
-        <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-[76px] bg-[#161a25]/50 backdrop-blur-md border-b border-[#262A36] px-8 flex items-center justify-between sticky top-0 z-50">
-            <div className="lg:hidden">
-              <LayoutDashboard className="w-6 h-6 text-slate-400" />
-            </div>
+        <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+          <header className="h-[76px] flex-shrink-0 bg-[#161a25]/90 backdrop-blur-md border-b border-[#262A36] px-4 md:px-8 flex items-center justify-between z-30 relative">
+            <button className="lg:hidden p-2 text-slate-400 hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(true)}>
+              <Menu className="w-6 h-6" />
+            </button>
 
             <div className="hidden md:flex flex-1 max-w-md mx-6">
               <div className="relative w-full">
