@@ -55,7 +55,7 @@ function DashboardApp() {
                 <Utensils className="w-5 h-5" />
               </div>
               <div className="flex flex-col">
-                <h1 className="text-xl font-bold tracking-tight text-white leading-none">DapurSync</h1>
+                <h1 className="text-xl font-bold tracking-tight text-white leading-none">Dapur MBG</h1>
                 <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-1">Makan Bergizi Gratis</p>
               </div>
             </div>
