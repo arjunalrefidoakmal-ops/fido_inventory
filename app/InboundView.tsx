@@ -101,7 +101,8 @@ export const InboundView = () => {
                  {inventoryData.filter(i => i.name.toLowerCase().includes(formData.item.toLowerCase())).map(invItem => (
                    <div 
                      key={invItem.sku} 
-                     onClick={() => {
+                     onMouseDown={(e) => {
+                        e.preventDefault();
                         setFormData({...formData, item: invItem.name, unit: invItem.unit});
                         setIsSearching(false);
                      }}
