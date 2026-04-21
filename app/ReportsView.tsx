@@ -11,6 +11,26 @@ const Card = ({ children, className = '', glow = false }: { children: React.Reac
 export const ReportsView = () => {
   const { stockReports } = useStore();
 
+  const handleExport = () => {
+    const headers = ['Date', 'Activity', 'Quantity', 'Purpose', 'Responsible Person'];
+    const csvRows = stockReports.map(r => {
+      // Escape columns that might have commas just in case
+      return `${r.date},${r.activity},"${r.qty}","${r.purpose}","${r.person}"`;
+    });
+
+    const csvContent = [headers.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Stock_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
   <div className="space-y-6 animate-in fade-in duration-500">
     <div className="text-sm text-slate-400 mb-2">
@@ -27,7 +47,7 @@ export const ReportsView = () => {
           <Calendar className="w-4 h-4 mr-2 text-slate-400" />
           Oct 01, 2024 - Oct 31, 2024
         </div>
-        <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+        <button onClick={handleExport} className="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.2)]">
           Export to CSV/Excel
         </button>
       </div>

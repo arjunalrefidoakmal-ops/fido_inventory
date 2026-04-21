@@ -1,12 +1,12 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://fido-inventory.vercel.app/" />
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy Vercel https://fido-inventory.vercel.app/
+# Run and deploy your AI Studio app
 
 This contains everything you need to run your app locally.
 
-View your app in vercel: https://fido-inventory.vercel.app/
+View your app in AI Studio: https://ai.studio/apps/6a3649a7-ad7b-49c9-93b3-24d8368c296d
 
 ## Run Locally
 

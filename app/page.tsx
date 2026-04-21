@@ -18,8 +18,10 @@ import {
 import { StoreProvider } from './store';
 import { DashboardView } from './DashboardView';
 import { InboundView } from './InboundView';
+import { OutboundView } from './OutboundView';
 import { MasterDataView } from './MasterDataView';
 import { ReportsView } from './ReportsView';
+import { SettingsView } from './SettingsView';
 
 function DashboardApp() {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -146,19 +148,10 @@ function DashboardApp() {
             <div className="max-w-[1400px] mx-auto">
               {activeTab === 'Dashboard' && <DashboardView />}
               {activeTab === 'Inbound' && <InboundView />}
+              {activeTab === 'Outbound' && <OutboundView />}
               {activeTab === 'Master Data' && <MasterDataView />}
               {activeTab === 'Reports' && <ReportsView />}
-              
-              {/* Fake views for empty tabs */}
-              {['Outbound', 'Settings'].includes(activeTab) && (
-                <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400 animate-in fade-in zoom-in-95 duration-500 bg-[#161a25]/50 rounded-3xl border border-[#262A36]">
-                  <div className="p-4 bg-indigo-500/10 rounded-full mb-4">
-                    <Database className="w-12 h-12 text-indigo-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-200 mb-2">{activeTab} Maintenance</h3>
-                  <p className="text-sm max-w-sm text-center">Modul {activeTab} sedang dalam pengembangan dan akan segera bisa Anda gunakan di update berikutnya.</p>
-                </div>
-              )}
+              {activeTab === 'Settings' && <SettingsView />}
             </div>
           </div>
         </main>

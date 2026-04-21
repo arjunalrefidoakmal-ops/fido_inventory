@@ -10,14 +10,17 @@ const Card = ({ children, className = '', glow = false }: { children: React.Reac
 );
 
 export const MasterDataView = () => {
-  const { inventoryData, addInventoryItem } = useStore();
+  const { inventoryData, addInventoryItem, editInventoryItem, deleteInventoryItem } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newItemParams, setNewItemParams] = useState({ name: '', category: 'Grains', stock: 0, unit: 'Kg', reorder: 0});
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editSkuTarget, setEditSkuTarget] = useState<string | null>(null);
 
-  const categories = ['Grains', 'Proteins', 'Vegetables', 'Dairy', 'Pantry'];
+  const [itemParams, setItemParams] = useState({ name: '', category: 'Grains', stock: 0, unit: 'Kg', reorder: 0});
+
+  const categories = ['Grains', 'Proteins', 'Vegetables', 'Dairy', 'Pantry', 'Others'];
 
   const filteredData = inventoryData.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.sku.toLowerCase().includes(searchTerm.toLowerCase());
@@ -26,24 +29,60 @@ export const MasterDataView = () => {
   });
 
   const handleAddNew = () => {
-    if(!newItemParams.name) return;
+    if(!itemParams.name) return;
     addInventoryItem({
-      name: newItemParams.name,
-      category: newItemParams.category,
-      stock: parseFloat(newItemParams.stock.toString()),
-      unit: newItemParams.unit,
-      reorder: parseFloat(newItemParams.reorder.toString()),
-      isLow: parseFloat(newItemParams.stock.toString()) <= parseFloat(newItemParams.reorder.toString())
+      name: itemParams.name,
+      category: itemParams.category,
+      stock: parseFloat(itemParams.stock.toString()),
+      unit: itemParams.unit,
+      reorder: parseFloat(itemParams.reorder.toString()),
+      isLow: parseFloat(itemParams.stock.toString()) <= parseFloat(itemParams.reorder.toString())
     });
     setShowAddModal(false);
-    setNewItemParams({ name: '', category: 'Grains', stock: 0, unit: 'Kg', reorder: 0});
+    setItemParams({ name: '', category: 'Grains', stock: 0, unit: 'Kg', reorder: 0});
+  };
+
+  const openEditModal = (item: any) => {
+    setEditSkuTarget(item.sku);
+    setItemParams({
+      name: item.name,
+      category: item.category,
+      stock: item.stock,
+      unit: item.unit,
+      reorder: item.reorder
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSave = () => {
+    if(!itemParams.name || !editSkuTarget) return;
+    editInventoryItem(editSkuTarget, {
+      name: itemParams.name,
+      category: itemParams.category,
+      stock: parseFloat(itemParams.stock.toString()),
+      unit: itemParams.unit,
+      reorder: parseFloat(itemParams.reorder.toString()),
+    });
+    setShowEditModal(false);
+    setEditSkuTarget(null);
+    setItemParams({ name: '', category: 'Grains', stock: 0, unit: 'Kg', reorder: 0});
+  };
+
+  const handleDelete = (sku: string) => {
+    if(window.confirm('Are you sure you want to delete this item?')) {
+      deleteInventoryItem(sku);
+    }
   };
 
   return (
   <div className="space-y-6 animate-in fade-in duration-500 relative">
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <h2 className="text-2xl font-semibold">Master Data Product Catalog</h2>
-      <button onClick={() => setShowAddModal(true)} className="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.4)] flex items-center gap-2">
+      <button onClick={() => {
+          setItemParams({ name: '', category: 'Grains', stock: 0, unit: 'Kg', reorder: 0});
+          setShowAddModal(true);
+        }} 
+        className="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.4)] flex items-center gap-2">
         <Plus className="w-4 h-4"/> Add New Item
       </button>
     </div>
@@ -114,10 +153,10 @@ export const MasterDataView = () => {
                 <td className="px-6 py-4 text-slate-300">{item.reorder} {item.unit}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-center gap-2">
-                    <button className="p-1.5 text-slate-400 hover:bg-slate-800 rounded-lg border border-slate-700 transition-colors">
+                    <button onClick={() => openEditModal(item)} className="p-1.5 text-slate-400 hover:bg-slate-800 rounded-lg border border-slate-700 transition-colors">
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 text-slate-400 hover:bg-slate-800 hover:text-red-400 rounded-lg border border-slate-700 transition-colors">
+                    <button onClick={() => handleDelete(item.sku)} className="p-1.5 text-slate-400 hover:bg-slate-800 hover:text-red-400 rounded-lg border border-slate-700 transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -142,42 +181,42 @@ export const MasterDataView = () => {
       </div>
     </Card>
 
-    {/* Add Item Modal Overlay */}
-    {showAddModal && (
+    {/* Add/Edit Item Modal Overlay */}
+    {(showAddModal || showEditModal) && (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
          <Card className="w-full max-w-md p-6 animate-in zoom-in-95">
-            <h3 className="text-xl font-bold mb-4">Add New Catalog Item</h3>
+            <h3 className="text-xl font-bold mb-4">{showEditModal ? 'Edit Catalog Item' : 'Add New Catalog Item'}</h3>
             
             <div className="space-y-4">
                <div>
                   <label className="block text-sm text-slate-400 mb-1">Item Name</label>
-                  <input type="text" value={newItemParams.name} onChange={e => setNewItemParams({...newItemParams, name: e.target.value})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
+                  <input type="text" value={itemParams.name} onChange={e => setItemParams({...itemParams, name: e.target.value})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
                </div>
                <div>
                   <label className="block text-sm text-slate-400 mb-1">Category</label>
-                  <select value={newItemParams.category} onChange={e => setNewItemParams({...newItemParams, category: e.target.value})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500">
+                  <select value={itemParams.category} onChange={e => setItemParams({...itemParams, category: e.target.value})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500">
                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                </div>
                <div className="flex gap-4">
                  <div className="flex-1">
-                    <label className="block text-sm text-slate-400 mb-1">Initial Stock</label>
-                    <input type="number" value={newItemParams.stock} onChange={e => setNewItemParams({...newItemParams, stock: Number(e.target.value)})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
+                    <label className="block text-sm text-slate-400 mb-1">Stock</label>
+                    <input type="number" value={itemParams.stock} onChange={e => setItemParams({...itemParams, stock: Number(e.target.value)})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
                  </div>
                  <div className="flex-1">
                     <label className="block text-sm text-slate-400 mb-1">Reorder Point</label>
-                    <input type="number" value={newItemParams.reorder} onChange={e => setNewItemParams({...newItemParams, reorder: Number(e.target.value)})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
+                    <input type="number" value={itemParams.reorder} onChange={e => setItemParams({...itemParams, reorder: Number(e.target.value)})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
                  </div>
                </div>
                <div>
                   <label className="block text-sm text-slate-400 mb-1">Unit</label>
-                  <input type="text" value={newItemParams.unit} onChange={e => setNewItemParams({...newItemParams, unit: e.target.value})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
+                  <input type="text" value={itemParams.unit} onChange={e => setItemParams({...itemParams, unit: e.target.value})} className="w-full bg-[#131620] border border-slate-700/50 rounded-xl py-2 px-4 text-slate-200 focus:outline-none focus:border-indigo-500" />
                </div>
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
-              <button onClick={() => setShowAddModal(false)} className="px-5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800">Cancel</button>
-              <button onClick={handleAddNew} className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">Save Item</button>
+              <button onClick={() => {setShowAddModal(false); setShowEditModal(false);}} className="px-5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800">Cancel</button>
+              <button onClick={showEditModal ? handleEditSave : handleAddNew} className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600">Save Item</button>
             </div>
          </Card>
       </div>
