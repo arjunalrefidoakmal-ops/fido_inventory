@@ -29,7 +29,13 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     storeName: 'DapurSync Utama',
     notificationsEnabled: true,
     autoBackup: true,
-    currency: 'IDR'
+    currency: 'IDR',
+    timezone: 'Asia/Jakarta',
+    emailAlerts: true,
+    lowStockThreshold: 10,
+    backupFrequency: 'Daily',
+    requirePinOnOutbound: false,
+    sessionTimeout: 30
   });
 
   const updateSettings = (newSettings: any) => {
