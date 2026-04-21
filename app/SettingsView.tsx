@@ -58,7 +58,7 @@ export const SettingsView = () => {
     <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl">
       <div>
         <h2 className="text-2xl font-semibold mb-2">Application Settings</h2>
-        <p className="text-sm text-slate-400">Manage your DapurSync application preferences and configurations.</p>
+        <p className="text-sm text-slate-400">Manage your Dapur MBG application preferences and configurations.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
