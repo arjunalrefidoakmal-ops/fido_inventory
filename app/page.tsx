@@ -44,7 +44,7 @@ function DashboardApp() {
           />
         )}
 
-        <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-[#161a25] border-r border-[#262A36] flex flex-col flex-shrink-0 relative overflow-y-auto transition-transform duration-300 transform lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-[#161a25] border-r border-[#262A36] flex flex-col flex-shrink-0 overflow-y-auto transition-transform duration-300 transform lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
           <div className="p-6 flex items-center justify-between gap-3 relative z-10">
