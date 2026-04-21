@@ -1,5 +1,5 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://fido-inventory.vercel.app/" />
+<img width="1200" height="475" alt="Refido Vercel" src="https://fido-inventory.vercel.app/" />
 </div>
 
 # Run and deploy your Vercel
@@ -14,6 +14,6 @@ View your app in : https://fido-inventory.vercel.app/
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Set the `` in [.env.local](.env.local) 
 3. Run the app:
    `npm run dev`
